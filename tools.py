@@ -54,7 +54,7 @@ def replace_accents_with_apostraphes(input_str):
 
 def add_stress_marks(input_str):
     bare_to_stressed = csv_to_dict("russian3 - words_forms.csv", 5, 4) # _form_bare, form
-    words = input_str.split(" ")
+    words = list(filter(None, input_str.split(" ")))
     result = []
     for word in words:
         without_punctuation = remove_leading_trailing_punctuation(word)
@@ -72,12 +72,14 @@ def add_stress_marks(input_str):
 
 
 def convert_to_dictionary_forms(input_str):
+    logging.debug("starting...")
     bare_to_id = csv_to_dict("russian3 - words_forms.csv", 5, 1) # _form_bare, word_id
     id_to_dictionary = csv_to_dict("russian3 - words.csv", 0, 3) # id, accented 
-    words = input_str.split(" ")
+    words = list(filter(None, input_str.split(" ")))
     result = []
     for word in words:
         without_punctuation = remove_leading_trailing_punctuation(word)
+        logging.debug(without_punctuation)
         word_ids = bare_to_id.get(without_punctuation.lower(), False)
         if word_ids:
             if len(word_ids) > 1:
@@ -92,7 +94,7 @@ def convert_to_dictionary_forms(input_str):
             logging.debug(f"Replacing {without_punctuation.lower()} with {replacement}")
             result.append(replace_lower_upper_title_cases(word, without_punctuation, replacement))
         else:
-            logging.debug(f"Not replacing {without_punctuation}; did not find in words_forms.csv")
+            logging.debug(f"Not replacing {without_punctuation.lower()}; did not find in words_forms.csv")
             result.append(word)
     return " ".join(result)
 
